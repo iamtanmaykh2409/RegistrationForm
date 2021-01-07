@@ -23,7 +23,9 @@ hbs.registerPartials(partial_path)
 app.get("/" , (req,res) =>{
     res.render("index")
 })
-
+app.get("/login", (req,res) =>{
+    res.render("login")
+})
 app.get("/register", (req,res) =>{
     res.render("register");
 })
@@ -50,6 +52,24 @@ app.post("/register",async (req,res) =>{
         }
     }catch(err){
         res.status(400).send(err)
+    }
+})
+
+// login
+app.post("/login",async(req,res) =>{
+    try{
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const useremail = await Register.findOne({email:email})
+        
+        if(useremail.password === password){
+            res.status(201).render("index");
+        }else{
+            res.send("Invalid Login Details");
+        }
+    }catch(err){
+        res.status(400).send("Invalid Login Details")
     }
 })
 
