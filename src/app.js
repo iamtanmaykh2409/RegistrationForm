@@ -3,6 +3,8 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const hbs = require("hbs");
+const bcrypt = require("bcryptjs");
+
 require("./db/conn")
 const Register = require("./models/register");
 
@@ -45,6 +47,10 @@ app.post("/register",async (req,res) =>{
                 password:password,
                 confirmpassword:cpassword
             })
+
+            // password hash
+            
+
             const registered = await registerEmployee.save();
             res.status(201).render("index");
         }else{
@@ -62,16 +68,27 @@ app.post("/login",async(req,res) =>{
         const password = req.body.password;
 
         const useremail = await Register.findOne({email:email})
+
+        const isMatch = await bcrypt.compare(password, useremail.password);
         
-        if(useremail.password === password){
+        if(isMatch){
             res.status(201).render("index");
         }else{
             res.send("Invalid Login Details");
         }
     }catch(err){
         res.status(400).send("Invalid Login Details")
-    }
+    } 
 })
+
+// const bcrypt = require("bcryptjs");
+
+// const securePassword = async (password) =>{
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     console.log(passwordHash)
+// }
+
+// securePassword("tanmay@123")
 
 app.listen(port, () =>{
     console.log(`Server is running at port no ${port}`);
